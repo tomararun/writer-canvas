@@ -1,3 +1,4 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { Prose } from "@/components/Prose";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { formatDate, site } from "@/content/site";
@@ -23,10 +24,10 @@ export const Route = createFileRoute("/writing/$slug")({
         { property: "og:title", content: post.title },
         { property: "og:description", content: post.dek },
         { property: "og:type", content: "article" },
-        { property: "og:url", content: `/writing/${params.slug}` },
+        { property: "og:url", content: absoluteUrl(`/writing/${params.slug}`) },
         { name: "twitter:card", content: "summary_large_image" },
       ],
-      links: [{ rel: "canonical", href: `/writing/${params.slug}` }],
+      links: [canonical(`/writing/${params.slug}`)],
       scripts: [
         {
           type: "application/ld+json",
@@ -49,7 +50,9 @@ export const Route = createFileRoute("/writing/$slug")({
 function PostPage() {
   const { post, all } = Route.useLoaderData();
   const related = all
-    .filter((p: typeof post) => p.slug !== post.slug && p.tags.some((t: string) => post.tags.includes(t)))
+    .filter(
+      (p: typeof post) => p.slug !== post.slug && p.tags.some((t: string) => post.tags.includes(t)),
+    )
     .slice(0, 3);
 
   return (
@@ -57,7 +60,9 @@ function PostPage() {
       <header className="border-b border-rule bg-paper">
         <div className="wrap py-16 md:py-24">
           <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-            <Link to="/writing" className="link-underline">Writing</Link>
+            <Link to="/writing" className="link-underline">
+              Writing
+            </Link>
             <span aria-hidden> / </span>
             <span>{post.category}</span>
           </nav>
@@ -81,7 +86,14 @@ function PostPage() {
             <Prose markdown={post.bodyMd} className="" />
           ) : (
             post.body.map((p: string, i: number) => (
-              <p key={i} className={i === 0 ? "first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8]" : ""}>
+              <p
+                key={i}
+                className={
+                  i === 0
+                    ? "first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.8]"
+                    : ""
+                }
+              >
                 {p}
               </p>
             ))
@@ -122,7 +134,10 @@ function PostPage() {
               </a>
             </li>
             <li>
-              <a className="link-underline" href={`mailto:?subject=${encodeURIComponent(post.title)}`}>
+              <a
+                className="link-underline"
+                href={`mailto:?subject=${encodeURIComponent(post.title)}`}
+              >
                 Email a friend
               </a>
             </li>
@@ -133,13 +148,19 @@ function PostPage() {
       {related.length > 0 && (
         <section aria-labelledby="related" className="border-t border-rule bg-paper">
           <div className="wrap py-16 md:py-20">
-            <h2 id="related" className="font-display text-2xl">Related reading</h2>
+            <h2 id="related" className="font-display text-2xl">
+              Related reading
+            </h2>
             <ul className="mt-8 grid gap-px bg-rule md:grid-cols-3">
               {related.map((r: typeof post) => (
                 <li key={r.slug} className="bg-paper p-6">
                   <p className="eyebrow">{r.category}</p>
                   <h3 className="mt-2 font-display text-lg leading-snug">
-                    <Link to="/writing/$slug" params={{ slug: r.slug }} className="hover:text-primary">
+                    <Link
+                      to="/writing/$slug"
+                      params={{ slug: r.slug }}
+                      className="hover:text-primary"
+                    >
                       {r.title}
                     </Link>
                   </h3>

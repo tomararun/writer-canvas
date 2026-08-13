@@ -190,3 +190,10 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+Run the unit tests with `npm test`.
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for environment variables, database
+migrations, Supabase dashboard settings, and the post-deploy smoke test.

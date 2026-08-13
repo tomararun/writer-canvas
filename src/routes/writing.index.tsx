@@ -1,8 +1,8 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { useContent } from "@/lib/content";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import { PostCard } from "@/components/PostCard";
-
 
 export const Route = createFileRoute("/writing/")({
   validateSearch: (search: Record<string, unknown>): { category?: string; tag?: string } => ({
@@ -22,10 +22,10 @@ export const Route = createFileRoute("/writing/")({
       { property: "og:title", content: "Writing — Essays, tutorials & reflections" },
       { property: "og:description", content: "Browse essays by category and tag." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/writing" },
+      { property: "og:url", content: absoluteUrl("/writing") },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/writing" }],
+    links: [canonical("/writing")],
   }),
   component: WritingIndex,
 });
@@ -53,7 +53,11 @@ function WritingIndex() {
           <h2 className="eyebrow">Categories</h2>
           <ul className="mt-4 grid gap-2 text-sm">
             <li>
-              <Link to="/writing" search={{ category: "", tag }} className={!category ? "text-primary" : "link-underline"}>
+              <Link
+                to="/writing"
+                search={{ category: "", tag }}
+                className={!category ? "text-primary" : "link-underline"}
+              >
                 All
               </Link>
             </li>

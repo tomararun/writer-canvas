@@ -23,6 +23,14 @@ export const subscribeToNewsletter = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Whether the studio's single admin seat is already claimed (public, boolean only). */
+export const getStudioAccess = createServerFn({ method: "GET" }).handler(async () => {
+  const { publicSupabase } = await import("./supabase-public.server");
+  const { data, error } = await publicSupabase().rpc("admin_seat_taken");
+  // On error err on the side of an open studio so the owner is never locked out.
+  return { seatTaken: !error && data === true };
+});
+
 export const sendContactMessage = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z

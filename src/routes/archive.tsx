@@ -1,3 +1,4 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import { formatDate, type CaseStudy, type Journal, type Post } from "@/content/site";
@@ -12,36 +13,34 @@ type Item = {
   tags: string[];
 };
 
-
 function buildItems(posts: Post[], caseStudies: CaseStudy[], journal: Journal[]): Item[] {
   return [
-  ...posts.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    date: p.date,
-    type: "Essay" as const,
-    category: p.category,
-    tags: p.tags,
-  })),
-  ...caseStudies.map((c) => ({
-    slug: c.slug,
-    title: c.title,
-    date: `${c.year}-01-01`,
-    type: "Case study" as const,
-    category: "Work",
-    tags: c.tags,
-  })),
-  ...journal.map((j) => ({
-    slug: j.slug,
-    title: j.title,
-    date: j.date,
-    type: "Journal" as const,
-    category: j.topic,
-    tags: [j.topic.toLowerCase()],
-  })),
+    ...posts.map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      date: p.date,
+      type: "Essay" as const,
+      category: p.category,
+      tags: p.tags,
+    })),
+    ...caseStudies.map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      date: `${c.year}-01-01`,
+      type: "Case study" as const,
+      category: "Work",
+      tags: c.tags,
+    })),
+    ...journal.map((j) => ({
+      slug: j.slug,
+      title: j.title,
+      date: j.date,
+      type: "Journal" as const,
+      category: j.topic,
+      tags: [j.topic.toLowerCase()],
+    })),
   ].sort((a, b) => (a.date < b.date ? 1 : -1));
 }
-
 
 const types = ["Essay", "Case study", "Journal"] as const;
 
@@ -64,10 +63,10 @@ export const Route = createFileRoute("/archive")({
       { property: "og:title", content: "Archive — Everything published, by date" },
       { property: "og:description", content: "Every piece, filterable by type, tag, and year." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/archive" },
+      { property: "og:url", content: absoluteUrl("/archive") },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/archive" }],
+    links: [canonical("/archive")],
   }),
   component: Archive,
 });
@@ -107,11 +106,23 @@ function Archive() {
             <legend className="eyebrow mb-3">Type</legend>
             <ul className="flex flex-wrap gap-2 text-xs">
               <li>
-                <Link to="/archive" search={{ type: "", tag, year }} className={`border px-2 py-1 ${!type ? "border-primary text-primary" : "border-rule"}`}>All</Link>
+                <Link
+                  to="/archive"
+                  search={{ type: "", tag, year }}
+                  className={`border px-2 py-1 ${!type ? "border-primary text-primary" : "border-rule"}`}
+                >
+                  All
+                </Link>
               </li>
               {types.map((t) => (
                 <li key={t}>
-                  <Link to="/archive" search={{ type: t, tag, year }} className={`border px-2 py-1 ${type === t ? "border-primary text-primary" : "border-rule"}`}>{t}</Link>
+                  <Link
+                    to="/archive"
+                    search={{ type: t, tag, year }}
+                    className={`border px-2 py-1 ${type === t ? "border-primary text-primary" : "border-rule"}`}
+                  >
+                    {t}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -121,11 +132,23 @@ function Archive() {
             <legend className="eyebrow mb-3">Year</legend>
             <ul className="flex flex-wrap gap-2 text-xs">
               <li>
-                <Link to="/archive" search={{ type, tag, year: "" }} className={`border px-2 py-1 ${!year ? "border-primary text-primary" : "border-rule"}`}>All</Link>
+                <Link
+                  to="/archive"
+                  search={{ type, tag, year: "" }}
+                  className={`border px-2 py-1 ${!year ? "border-primary text-primary" : "border-rule"}`}
+                >
+                  All
+                </Link>
               </li>
               {years.map((y) => (
                 <li key={y}>
-                  <Link to="/archive" search={{ type, tag, year: y }} className={`border px-2 py-1 ${year === y ? "border-primary text-primary" : "border-rule"}`}>{y}</Link>
+                  <Link
+                    to="/archive"
+                    search={{ type, tag, year: y }}
+                    className={`border px-2 py-1 ${year === y ? "border-primary text-primary" : "border-rule"}`}
+                  >
+                    {y}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -136,7 +159,13 @@ function Archive() {
             <ul className="flex flex-wrap gap-2 text-xs">
               {tags.map((t) => (
                 <li key={t}>
-                  <Link to="/archive" search={{ type, tag: tag === t ? "" : t, year }} className={`border px-2 py-1 ${tag === t ? "border-primary text-primary" : "border-rule"}`}>#{t}</Link>
+                  <Link
+                    to="/archive"
+                    search={{ type, tag: tag === t ? "" : t, year }}
+                    className={`border px-2 py-1 ${tag === t ? "border-primary text-primary" : "border-rule"}`}
+                  >
+                    #{t}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -151,9 +180,16 @@ function Archive() {
           {filtered.map((i) => {
             const link = itemLink(i);
             return (
-              <li key={`${i.type}-${i.slug}`} className="grid gap-2 border-b border-rule py-5 sm:grid-cols-[8rem_1fr_8rem] sm:items-baseline">
-                <time className="text-xs text-muted-foreground" dateTime={i.date}>{formatDate(i.date)}</time>
-                <Link {...link} className="font-display text-lg hover:text-primary">{i.title}</Link>
+              <li
+                key={`${i.type}-${i.slug}`}
+                className="grid gap-2 border-b border-rule py-5 sm:grid-cols-[8rem_1fr_8rem] sm:items-baseline"
+              >
+                <time className="text-xs text-muted-foreground" dateTime={i.date}>
+                  {formatDate(i.date)}
+                </time>
+                <Link {...link} className="font-display text-lg hover:text-primary">
+                  {i.title}
+                </Link>
                 <span className="text-xs text-muted-foreground sm:text-right">{i.type}</span>
               </li>
             );

@@ -1,3 +1,4 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { useContent } from "@/lib/content";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
@@ -15,10 +16,10 @@ export const Route = createFileRoute("/journal/")({
       { property: "og:title", content: "Learning journal — Weekly notes in public" },
       { property: "og:description", content: "Weekly notes on learning in public." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/journal" },
+      { property: "og:url", content: absoluteUrl("/journal") },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/journal" }],
+    links: [canonical("/journal")],
   }),
   component: JournalIndex,
 });
@@ -36,7 +37,10 @@ function JournalIndex() {
       <div className="wrap py-16 md:py-24">
         <ol className="grid gap-10">
           {journal.map((j) => (
-            <li key={j.slug} className="grid gap-4 border-t border-rule pt-6 md:grid-cols-[1fr_3fr]">
+            <li
+              key={j.slug}
+              className="grid gap-4 border-t border-rule pt-6 md:grid-cols-[1fr_3fr]"
+            >
               <div>
                 <time className="text-sm text-muted-foreground" dateTime={j.date}>
                   {formatDate(j.date)}
@@ -45,11 +49,17 @@ function JournalIndex() {
               </div>
               <div>
                 <h2 className="font-display text-2xl leading-snug">
-                  <Link to="/journal/$slug" params={{ slug: j.slug }} className="hover:text-primary">
+                  <Link
+                    to="/journal/$slug"
+                    params={{ slug: j.slug }}
+                    className="hover:text-primary"
+                  >
                     {j.title}
                   </Link>
                 </h2>
-                <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{j.reflection[0]}</p>
+                <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
+                  {j.reflection[0]}
+                </p>
               </div>
             </li>
           ))}

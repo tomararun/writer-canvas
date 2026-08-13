@@ -1,3 +1,4 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PostCard } from "@/components/PostCard";
 import { formatDate, site } from "@/content/site";
@@ -18,10 +19,10 @@ export const Route = createFileRoute("/")({
         content: "Essays, case studies, and a public learning journal on craft and attention.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: absoluteUrl("/") },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [canonical("/")],
     scripts: [
       {
         type: "application/ld+json",
@@ -65,7 +66,10 @@ function Home() {
               >
                 Read the writing
               </Link>
-              <Link to="/about" className="border border-foreground/25 px-6 py-3 text-sm transition-colors hover:border-primary">
+              <Link
+                to="/about"
+                className="border border-foreground/25 px-6 py-3 text-sm transition-colors hover:border-primary"
+              >
                 About me
               </Link>
             </div>
@@ -80,11 +84,13 @@ function Home() {
               </li>
               <li>
                 <span className="text-muted-foreground">Learning</span>
-                <br />Typography, interviewing, and just enough SQL.
+                <br />
+                Typography, interviewing, and just enough SQL.
               </li>
               <li>
                 <span className="text-muted-foreground">Reading</span>
-                <br />Ways of Seeing, again, slower this time.
+                <br />
+                Ways of Seeing, again, slower this time.
               </li>
             </ul>
           </aside>
@@ -93,8 +99,12 @@ function Home() {
 
       <section aria-labelledby="featured-writing" className="wrap py-20 md:py-28">
         <div className="mb-10 flex items-baseline justify-between gap-6">
-          <h2 id="featured-writing" className="font-display text-3xl sm:text-4xl">Featured writing</h2>
-          <Link to="/writing" className="link-underline shrink-0 text-sm">All essays</Link>
+          <h2 id="featured-writing" className="font-display text-3xl sm:text-4xl">
+            Featured writing
+          </h2>
+          <Link to="/writing" className="link-underline shrink-0 text-sm">
+            All essays
+          </Link>
         </div>
         <div className="grid gap-12">
           {featured.map((p, i) => (
@@ -106,15 +116,25 @@ function Home() {
       <section aria-labelledby="featured-cases" className="border-y border-rule bg-paper">
         <div className="wrap py-20 md:py-28">
           <div className="mb-10 flex items-baseline justify-between gap-6">
-            <h2 id="featured-cases" className="font-display text-3xl sm:text-4xl">Selected case studies</h2>
-            <Link to="/case-studies" className="link-underline shrink-0 text-sm">All work</Link>
+            <h2 id="featured-cases" className="font-display text-3xl sm:text-4xl">
+              Selected case studies
+            </h2>
+            <Link to="/case-studies" className="link-underline shrink-0 text-sm">
+              All work
+            </Link>
           </div>
           <div className="grid gap-10 md:grid-cols-2">
             {featuredStudies.map((c) => (
               <article key={c.slug} className="border-t border-rule pt-6">
-                <p className="text-xs text-muted-foreground">{c.client} · {c.year}</p>
+                <p className="text-xs text-muted-foreground">
+                  {c.client} · {c.year}
+                </p>
                 <h3 className="mt-3 font-display text-2xl leading-tight">
-                  <Link to="/case-studies/$slug" params={{ slug: c.slug }} className="hover:text-primary">
+                  <Link
+                    to="/case-studies/$slug"
+                    params={{ slug: c.slug }}
+                    className="hover:text-primary"
+                  >
                     {c.title}
                   </Link>
                 </h3>
@@ -135,8 +155,12 @@ function Home() {
 
       <section aria-labelledby="current-learning" className="wrap py-20 md:py-28">
         <div className="mb-10 flex items-baseline justify-between gap-6">
-          <h2 id="current-learning" className="font-display text-3xl sm:text-4xl">What I'm learning</h2>
-          <Link to="/journal" className="link-underline shrink-0 text-sm">The journal</Link>
+          <h2 id="current-learning" className="font-display text-3xl sm:text-4xl">
+            What I'm learning
+          </h2>
+          <Link to="/journal" className="link-underline shrink-0 text-sm">
+            The journal
+          </Link>
         </div>
         <ul className="grid gap-px bg-rule md:grid-cols-3">
           {latestJournal.map((j) => (

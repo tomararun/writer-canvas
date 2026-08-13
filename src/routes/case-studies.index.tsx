@@ -1,7 +1,7 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { useContent } from "@/lib/content";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
-
 
 export const Route = createFileRoute("/case-studies/")({
   head: () => ({
@@ -15,10 +15,10 @@ export const Route = createFileRoute("/case-studies/")({
       { property: "og:title", content: "Case studies — Editorial systems & content architecture" },
       { property: "og:description", content: "Deep process breakdowns of editorial work." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/case-studies" },
+      { property: "og:url", content: absoluteUrl("/case-studies") },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/case-studies" }],
+    links: [canonical("/case-studies")],
   }),
   component: CaseStudiesIndex,
 });
@@ -45,11 +45,17 @@ function CaseStudiesIndex() {
                 </div>
                 <div>
                   <h2 className="font-display text-3xl leading-tight sm:text-4xl">
-                    <Link to="/case-studies/$slug" params={{ slug: c.slug }} className="hover:text-primary">
+                    <Link
+                      to="/case-studies/$slug"
+                      params={{ slug: c.slug }}
+                      className="hover:text-primary"
+                    >
                       {c.title}
                     </Link>
                   </h2>
-                  <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{c.summary}</p>
+                  <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
+                    {c.summary}
+                  </p>
                   <dl className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
                     {c.metrics.map((m) => (
                       <div key={m.label}>

@@ -1,3 +1,4 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { Prose } from "@/components/Prose";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { formatDate, site } from "@/content/site";
@@ -23,10 +24,10 @@ export const Route = createFileRoute("/journal/$slug")({
         { property: "og:title", content: entry.title },
         { property: "og:description", content: desc },
         { property: "og:type", content: "article" },
-        { property: "og:url", content: `/journal/${params.slug}` },
+        { property: "og:url", content: absoluteUrl(`/journal/${params.slug}`) },
         { name: "twitter:card", content: "summary_large_image" },
       ],
-      links: [{ rel: "canonical", href: `/journal/${params.slug}` }],
+      links: [canonical(`/journal/${params.slug}`)],
       scripts: [
         {
           type: "application/ld+json",
@@ -53,7 +54,9 @@ function JournalEntry() {
       <header className="border-b border-rule bg-paper">
         <div className="wrap py-16 md:py-24">
           <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-            <Link to="/journal" className="link-underline">Journal</Link>
+            <Link to="/journal" className="link-underline">
+              Journal
+            </Link>
             <span aria-hidden> / </span>
             <span>{entry.topic}</span>
           </nav>
@@ -81,25 +84,35 @@ function JournalEntry() {
             <ul className="mt-4 grid gap-3 text-sm">
               {entry.resources.map((r: { label: string; href: string }) => (
                 <li key={r.label}>
-                  <a href={r.href} className="link-underline">{r.label}</a>
+                  <a href={r.href} className="link-underline">
+                    {r.label}
+                  </a>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-4 text-sm text-muted-foreground">No links this week — just practice.</p>
+            <p className="mt-4 text-sm text-muted-foreground">
+              No links this week — just practice.
+            </p>
           )}
         </aside>
       </div>
 
       <section aria-labelledby="related-entries" className="border-t border-rule bg-paper">
         <div className="wrap py-16">
-          <h2 id="related-entries" className="font-display text-2xl">Related entries</h2>
+          <h2 id="related-entries" className="font-display text-2xl">
+            Related entries
+          </h2>
           <ul className="mt-8 grid gap-px bg-rule sm:grid-cols-2">
             {related.map((r: typeof entry) => (
               <li key={r.slug} className="bg-paper p-6">
                 <p className="eyebrow">{r.topic}</p>
                 <h3 className="mt-2 font-display text-lg">
-                  <Link to="/journal/$slug" params={{ slug: r.slug }} className="hover:text-primary">
+                  <Link
+                    to="/journal/$slug"
+                    params={{ slug: r.slug }}
+                    className="hover:text-primary"
+                  >
                     {r.title}
                   </Link>
                 </h3>

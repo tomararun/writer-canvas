@@ -1,3 +1,4 @@
+import { absoluteUrl, canonical } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
@@ -16,10 +17,10 @@ export const Route = createFileRoute("/contact")({
       { property: "og:title", content: "Contact — Maya Ellsworth" },
       { property: "og:description", content: "Commissions, collaborations, and correspondence." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/contact" },
+      { property: "og:url", content: absoluteUrl("/contact") },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/contact" }],
+    links: [canonical("/contact")],
   }),
   component: Contact,
 });

@@ -1,7 +1,9 @@
+import { canonical } from "@/lib/seo";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { PageHeader } from "@/components/PageHeader";
+import { getStudioAccess } from "@/lib/content.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
@@ -19,7 +21,7 @@ export const Route = createFileRoute("/auth")({
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
-    links: [{ rel: "canonical", href: "/auth" }],
+    links: [canonical("/auth")],
   }),
   component: AuthPage,
 });
@@ -31,11 +33,16 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [seatTaken, setSeatTaken] = useState(false);
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session) void navigate({ to: "/admin", replace: true });
     });
+    // Once the single admin seat is claimed, stop offering account creation.
+    void getStudioAccess()
+      .then(({ seatTaken: taken }) => setSeatTaken(taken))
+      .catch(() => setSeatTaken(false));
   }, [navigate]);
 
   async function onForgotPassword() {
@@ -139,19 +146,37 @@ function AuthPage() {
             {busy ? "Working…" : mode === "signup" ? "Create account" : "Sign in"}
           </button>
 
-          <p className="mt-6 text-sm text-muted-foreground">
-            {mode === "signup" ? "Already have an account?" : "First time here?"}{" "}
-            <button
-              type="button"
-              className="link-underline text-primary"
-              onClick={() => {
-                setMode(mode === "signup" ? "signin" : "signup");
-                setMessage("");
-              }}
-            >
-              {mode === "signup" ? "Sign in" : "Create the studio account"}
-            </button>
-          </p>
+          {seatTaken ? (
+            mode === "signup" && (
+              <p className="mt-6 text-sm text-muted-foreground">
+                The studio account already exists — sign-ups are closed.{" "}
+                <button
+                  type="button"
+                  className="link-underline text-primary"
+                  onClick={() => {
+                    setMode("signin");
+                    setMessage("");
+                  }}
+                >
+                  Sign in
+                </button>
+              </p>
+            )
+          ) : (
+            <p className="mt-6 text-sm text-muted-foreground">
+              {mode === "signup" ? "Already have an account?" : "First time here?"}{" "}
+              <button
+                type="button"
+                className="link-underline text-primary"
+                onClick={() => {
+                  setMode(mode === "signup" ? "signin" : "signup");
+                  setMessage("");
+                }}
+              >
+                {mode === "signup" ? "Sign in" : "Create the studio account"}
+              </button>
+            </p>
+          )}
 
           {message && (
             <p role="status" className="mt-6 border-l-2 border-primary pl-4 text-sm">
