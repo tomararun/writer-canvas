@@ -10,7 +10,8 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in — Studio access" },
       {
         name: "description",
-        content: "Sign in to the writing studio to draft, edit, and publish essays and case studies.",
+        content:
+          "Sign in to the writing studio to draft, edit, and publish essays and case studies.",
       },
       { property: "og:title", content: "Sign in — Studio access" },
       { property: "og:description", content: "Private studio access for publishing." },
@@ -36,6 +37,26 @@ function AuthPage() {
       if (data.session) void navigate({ to: "/admin", replace: true });
     });
   }, [navigate]);
+
+  async function onForgotPassword() {
+    if (!email.trim()) {
+      setMessage("Enter your email above first, then tap “Forgot password?” again.");
+      return;
+    }
+    setBusy(true);
+    setMessage("");
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/auth/reset",
+      });
+      if (error) throw error;
+      setMessage("Check your inbox — the reset link signs you in to choose a new password.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Something went wrong.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,7 +92,9 @@ function AuthPage() {
       <PageHeader eyebrow="Studio" title="Sign in to the studio." />
       <div className="wrap py-16 md:py-24">
         <form onSubmit={onSubmit} className="max-w-sm">
-          <label htmlFor="email" className="eyebrow">Email</label>
+          <label htmlFor="email" className="eyebrow">
+            Email
+          </label>
           <input
             id="email"
             type="email"
@@ -82,7 +105,21 @@ function AuthPage() {
             className="mt-2 w-full border-b border-foreground/30 bg-transparent py-2 outline-none focus:border-primary"
           />
 
-          <label htmlFor="password" className="eyebrow mt-8 block">Password</label>
+          <div className="mt-8 flex items-baseline justify-between gap-4">
+            <label htmlFor="password" className="eyebrow">
+              Password
+            </label>
+            {mode === "signin" && (
+              <button
+                type="button"
+                disabled={busy}
+                className="link-underline text-xs text-muted-foreground"
+                onClick={onForgotPassword}
+              >
+                Forgot password?
+              </button>
+            )}
+          </div>
           <input
             id="password"
             type="password"
@@ -117,7 +154,9 @@ function AuthPage() {
           </p>
 
           {message && (
-            <p role="status" className="mt-6 border-l-2 border-primary pl-4 text-sm">{message}</p>
+            <p role="status" className="mt-6 border-l-2 border-primary pl-4 text-sm">
+              {message}
+            </p>
           )}
         </form>
       </div>

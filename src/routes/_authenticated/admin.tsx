@@ -11,6 +11,7 @@ import {
   deleteRecord,
   deleteSubscriber,
   getAdminStatus,
+  getTrafficSummary,
   listAllRecords,
   listAuditLog,
   listContactMessages,
@@ -231,7 +232,7 @@ function AdminPage() {
 
 function Studio({ onSignOut }: { onSignOut: () => void }) {
   const [tabIndex, setTabIndex] = useState(0);
-  const extraTabs = ["Messages", "Subscribers", "Activity"];
+  const extraTabs = ["Media", "Messages", "Subscribers", "Traffic", "Activity"];
   const tab = TABS[tabIndex];
 
   return (
@@ -271,10 +272,14 @@ function Studio({ onSignOut }: { onSignOut: () => void }) {
         </div>
 
         {tabIndex === TABS.length ? (
-          <MessageInbox />
+          <MediaLibrary />
         ) : tabIndex === TABS.length + 1 ? (
-          <SubscriberList />
+          <MessageInbox />
         ) : tabIndex === TABS.length + 2 ? (
+          <SubscriberList />
+        ) : tabIndex === TABS.length + 3 ? (
+          <TrafficReport />
+        ) : tabIndex === TABS.length + 4 ? (
           <ActivityLog />
         ) : tab ? (
           <TableEditor key={tab.table} tab={tab} />
@@ -734,6 +739,74 @@ function RevisionList({
   );
 }
 
+function TrafficReport() {
+  const traffic = useQuery({ queryKey: ["traffic"], queryFn: () => getTrafficSummary() });
+  const data = traffic.data;
+  const maxDay = Math.max(1, ...(data?.byDay ?? []).map((d) => d.views));
+
+  return (
+    <section className="mt-10">
+      <h2 className="font-display text-2xl">Traffic — last 30 days</h2>
+      {traffic.isLoading && <p className="mt-4 text-sm text-muted-foreground">Loading…</p>}
+      {traffic.isError && (
+        <p className="mt-4 text-sm text-muted-foreground">
+          No traffic data yet. Views are recorded once the page_views migration is applied.
+        </p>
+      )}
+
+      {data && (
+        <>
+          <p className="mt-4 text-sm">
+            <span className="font-display text-3xl">{data.total.toLocaleString()}</span>{" "}
+            <span className="text-muted-foreground">page views</span>
+          </p>
+
+          <div className="mt-10 grid gap-12 lg:grid-cols-2">
+            <div>
+              <h3 className="eyebrow">By day</h3>
+              <ul className="mt-4 grid gap-1">
+                {data.byDay.map((d) => (
+                  <li key={d.day} className="flex items-center gap-3 text-xs">
+                    <span className="w-20 shrink-0 text-muted-foreground">{d.day.slice(5)}</span>
+                    <span
+                      className="h-3 bg-primary/70"
+                      style={{ width: `${Math.max(2, (d.views / maxDay) * 100)}%` }}
+                    />
+                    <span>{d.views}</span>
+                  </li>
+                ))}
+                {data.byDay.length === 0 && (
+                  <li className="text-sm text-muted-foreground">No views recorded yet.</li>
+                )}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="eyebrow">Top pages</h3>
+              <ul className="mt-4 grid gap-px bg-rule">
+                {data.byPath.map((p) => (
+                  <li
+                    key={p.path}
+                    className="flex items-baseline justify-between gap-4 bg-paper py-2 text-sm"
+                  >
+                    <span className="truncate" title={p.path}>
+                      {p.path}
+                    </span>
+                    <span className="shrink-0 text-muted-foreground">{p.views}</span>
+                  </li>
+                ))}
+                {data.byPath.length === 0 && (
+                  <li className="bg-paper py-2 text-sm text-muted-foreground">Nothing yet.</li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 function ActivityLog() {
   const log = useQuery({ queryKey: ["audit-log"], queryFn: () => listAuditLog() });
 
@@ -759,6 +832,137 @@ function ActivityLog() {
       </ul>
       {log.data?.length === 0 && (
         <p className="mt-6 text-sm text-muted-foreground">Nothing logged yet.</p>
+      )}
+    </section>
+  );
+}
+
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+function MediaLibrary() {
+  const queryClient = useQueryClient();
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState("");
+
+  const list = useQuery({
+    queryKey: ["media"],
+    queryFn: async () => {
+      const { data, error: listError } = await supabase.storage.from("media").list("", {
+        limit: 200,
+        sortBy: { column: "created_at", order: "desc" },
+      });
+      if (listError) throw new Error(listError.message);
+      return (data ?? []).filter((f) => f.name !== ".emptyFolderPlaceholder");
+    },
+  });
+
+  const upload = useMutation({
+    mutationFn: async (file: File) => {
+      if (!file.type.startsWith("image/")) throw new Error("Only image files are supported.");
+      if (file.size > MAX_UPLOAD_BYTES) throw new Error("Keep images under 5 MB.");
+      const safeName = file.name
+        .toLowerCase()
+        .replace(/[^\w.-]+/g, "-")
+        .replace(/-+/g, "-");
+      const { error: upError } = await supabase.storage
+        .from("media")
+        .upload(`${Date.now()}-${safeName}`, file, { cacheControl: "31536000" });
+      if (upError) throw new Error(upError.message);
+    },
+    onSuccess: async () => {
+      setError("");
+      await queryClient.invalidateQueries({ queryKey: ["media"] });
+    },
+    onError: (e) => setError(e instanceof Error ? e.message : "Upload failed."),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (name: string) => {
+      const { error: rmError } = await supabase.storage.from("media").remove([name]);
+      if (rmError) throw new Error(rmError.message);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["media"] }),
+  });
+
+  function publicUrl(name: string) {
+    return supabase.storage.from("media").getPublicUrl(name).data.publicUrl;
+  }
+
+  async function copy(text: string, name: string) {
+    await navigator.clipboard?.writeText(text);
+    setCopied(name);
+    setTimeout(() => setCopied(""), 2000);
+  }
+
+  return (
+    <section className="mt-10">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="font-display text-2xl">Media {list.data ? `(${list.data.length})` : ""}</h2>
+        <label className="cursor-pointer bg-primary px-4 py-2 text-xs text-primary-foreground">
+          {upload.isPending ? "Uploading…" : "Upload image"}
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            disabled={upload.isPending}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) upload.mutate(file);
+              e.target.value = "";
+            }}
+          />
+        </label>
+      </div>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Paste the copied markdown into any body field to place an image. Files are public once
+        uploaded.
+      </p>
+      {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
+      {list.isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading…</p>}
+
+      <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {(list.data ?? []).map((f) => {
+          const url = publicUrl(f.name);
+          return (
+            <li key={f.name} className="border border-rule">
+              <img
+                src={url}
+                alt=""
+                loading="lazy"
+                className="aspect-[4/3] w-full bg-rule object-cover"
+              />
+              <div className="p-3">
+                <p className="truncate text-xs text-muted-foreground" title={f.name}>
+                  {f.name}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-3 text-xs">
+                  <button className="link-underline" onClick={() => copy(url, f.name)}>
+                    {copied === f.name ? "Copied!" : "Copy URL"}
+                  </button>
+                  <button
+                    className="link-underline"
+                    onClick={() => copy(`![](${url})`, `md-${f.name}`)}
+                  >
+                    {copied === `md-${f.name}` ? "Copied!" : "Copy markdown"}
+                  </button>
+                  <button
+                    className="link-underline text-destructive"
+                    disabled={remove.isPending}
+                    onClick={() => {
+                      if (confirm(`Delete ${f.name}? Pages using it will show a broken image.`))
+                        remove.mutate(f.name);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      {list.data?.length === 0 && (
+        <p className="mt-6 text-sm text-muted-foreground">No images yet.</p>
       )}
     </section>
   );

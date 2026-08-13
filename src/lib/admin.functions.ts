@@ -282,6 +282,21 @@ export const listAuditLog = createServerFn({ method: "GET" })
     return (data ?? []) as AuditEntry[];
   });
 
+export type TrafficSummary = {
+  total: number;
+  byPath: { path: string; views: number }[];
+  byDay: { day: string; views: number }[];
+};
+
+export const getTrafficSummary = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const db = await assertAdmin(context as unknown as Ctx);
+    const { data, error } = await db.rpc("page_view_summary", { _days: 30 });
+    if (error) throw new Error(error.message);
+    return (data ?? { total: 0, byPath: [], byDay: [] }) as TrafficSummary;
+  });
+
 export type ContactMessage = {
   id: string;
   name: string;

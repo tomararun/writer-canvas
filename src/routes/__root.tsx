@@ -4,17 +4,18 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { trackPageView } from "@/lib/analytics";
 import { contentQueryOptions } from "@/lib/content";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-
 
 function NotFoundComponent() {
   return (
@@ -25,8 +26,8 @@ function NotFoundComponent() {
           This page was cut in the edit.
         </h1>
         <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-          The link is broken or the piece has moved. The archive keeps everything, so it is
-          probably still there under a different name.
+          The link is broken or the piece has moved. The archive keeps everything, so it is probably
+          still there under a different name.
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <Link to="/archive" className="bg-primary px-5 py-2.5 text-sm text-primary-foreground">
@@ -40,7 +41,6 @@ function NotFoundComponent() {
     </div>
   );
 }
-
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
@@ -130,6 +130,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -148,4 +153,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-

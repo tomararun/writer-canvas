@@ -9,19 +9,23 @@ export function NewsletterSignup({ compact = false }: { compact?: boolean }) {
   const [error, setError] = useState("");
 
   return (
-    <section id="newsletter" aria-labelledby="newsletter-heading" className={compact ? "" : "max-w-lg"}>
+    <section
+      id="newsletter"
+      aria-labelledby="newsletter-heading"
+      className={compact ? "" : "max-w-lg"}
+    >
       <p className="eyebrow mb-3">The Margins</p>
       <h2 id="newsletter-heading" className="font-display text-2xl leading-snug sm:text-3xl">
         One essay a week, on craft and attention.
       </h2>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         No growth tactics, no roundups. Just the piece I would want to read on a Sunday morning.
-        11,400 readers. Unsubscribe whenever.
+        Unsubscribe whenever.
       </p>
 
       {done ? (
         <p role="status" className="mt-6 border-l-2 border-primary pl-4 text-sm">
-          Thank you — check your inbox to confirm. The next issue lands Sunday.
+          Thank you — you are on the list.
         </p>
       ) : (
         <form
@@ -41,7 +45,9 @@ export function NewsletterSignup({ compact = false }: { compact?: boolean }) {
             }
           }}
         >
-          <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+          <label htmlFor="newsletter-email" className="sr-only">
+            Email address
+          </label>
           <input
             id="newsletter-email"
             type="email"
