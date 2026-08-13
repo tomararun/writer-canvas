@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
- * Called on a schedule to publish any entry whose scheduled time has passed.
+ * Manual fallback to publish any entry whose scheduled time has passed.
+ * The primary trigger is the pg_cron job inside the database
+ * (supabase/migrations/20260813120000_schedule_publish_due_content.sql);
+ * this endpoint exists for ad-hoc runs and external schedulers.
  * Guarded by the project's publishable API key.
  */
 export const Route = createFileRoute("/api/public/hooks/publish-scheduled")({
@@ -16,8 +19,8 @@ export const Route = createFileRoute("/api/public/hooks/publish-scheduled")({
           });
         }
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data, error } = await supabaseAdmin.rpc("publish_due_content");
+        const { publicSupabase } = await import("@/lib/supabase-public.server");
+        const { data, error } = await publicSupabase().rpc("publish_due_content");
         if (error) {
           console.error("publish_due_content failed", error.message);
           return new Response(JSON.stringify({ error: error.message }), {

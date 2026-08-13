@@ -26,7 +26,8 @@ export type PreviewResult =
 
 /**
  * Reads one entry by slug AND its secret preview token, regardless of publish state.
- * The token acts as the credential — no token, no row.
+ * The token acts as the credential — no token, no row. The lookup runs through a
+ * SECURITY DEFINER RPC so only the publishable key is needed on the server.
  */
 export const getPreview = createServerFn({ method: "POST" })
   .inputValidator((input) =>
@@ -39,14 +40,12 @@ export const getPreview = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data }): Promise<PreviewResult> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const table = TABLES[data.type];
-    const { data: row } = await supabaseAdmin
-      .from(table)
-      .select("*")
-      .eq("slug", data.slug)
-      .eq("preview_token", data.token)
-      .maybeSingle();
+    const { publicSupabase } = await import("@/lib/supabase-public.server");
+    const { data: row } = await publicSupabase().rpc("get_preview_row", {
+      _table: TABLES[data.type],
+      _slug: data.slug,
+      _token: data.token,
+    });
 
     if (!row) return { ok: false };
     const record = row as Record<string, unknown>;
@@ -54,8 +53,7 @@ export const getPreview = createServerFn({ method: "POST" })
       ok: true as const,
       type: data.type,
       status: typeof record["status"] === "string" ? record["status"] : "draft",
-      scheduledFor:
-        typeof record["scheduled_for"] === "string" ? record["scheduled_for"] : null,
+      scheduledFor: typeof record["scheduled_for"] === "string" ? record["scheduled_for"] : null,
     };
 
     if (data.type === "post") return { ...base, post: mapPost(record) };

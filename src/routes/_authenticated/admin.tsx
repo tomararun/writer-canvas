@@ -7,15 +7,18 @@ import { PageHeader } from "@/components/PageHeader";
 import { Prose } from "@/components/Prose";
 import {
   claimAdminSeat,
+  deleteContactMessage,
   deleteRecord,
   deleteSubscriber,
   getAdminStatus,
   listAllRecords,
   listAuditLog,
+  listContactMessages,
   listRevisions,
   listSubscribers,
   restoreRevision,
   saveRecord,
+  setContactMessageRead,
   setWorkflowState,
   type ContentRow,
   type ContentTable,
@@ -151,7 +154,10 @@ function toInput(kind: FieldKind, value: unknown): string {
 function fromInput(kind: FieldKind, raw: string): unknown {
   switch (kind) {
     case "list":
-      return raw.split("\n").map((l) => l.trim()).filter(Boolean);
+      return raw
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
     case "json":
       return raw.trim() ? JSON.parse(raw) : [];
     case "number":
@@ -212,7 +218,9 @@ function AdminPage() {
               </button>
             </>
           )}
-          <button onClick={signOut} className="mt-8 block link-underline text-sm">Sign out</button>
+          <button onClick={signOut} className="mt-8 block link-underline text-sm">
+            Sign out
+          </button>
         </div>
       </>
     );
@@ -223,7 +231,7 @@ function AdminPage() {
 
 function Studio({ onSignOut }: { onSignOut: () => void }) {
   const [tabIndex, setTabIndex] = useState(0);
-  const extraTabs = ["Subscribers", "Activity"];
+  const extraTabs = ["Messages", "Subscribers", "Activity"];
   const tab = TABS[tabIndex];
 
   return (
@@ -236,7 +244,9 @@ function Studio({ onSignOut }: { onSignOut: () => void }) {
               <button
                 key={t.table}
                 onClick={() => setTabIndex(i)}
-                className={i === tabIndex ? "text-primary" : "text-muted-foreground hover:text-foreground"}
+                className={
+                  i === tabIndex ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                }
               >
                 {t.label}
               </button>
@@ -255,12 +265,16 @@ function Studio({ onSignOut }: { onSignOut: () => void }) {
               </button>
             ))}
           </nav>
-          <button onClick={onSignOut} className="link-underline text-sm">Sign out</button>
+          <button onClick={onSignOut} className="link-underline text-sm">
+            Sign out
+          </button>
         </div>
 
         {tabIndex === TABS.length ? (
-          <SubscriberList />
+          <MessageInbox />
         ) : tabIndex === TABS.length + 1 ? (
+          <SubscriberList />
+        ) : tabIndex === TABS.length + 2 ? (
           <ActivityLog />
         ) : tab ? (
           <TableEditor key={tab.table} tab={tab} />
@@ -355,7 +369,9 @@ function TableEditor({ tab }: { tab: Tab }) {
         <ul className="mt-6 grid gap-px bg-rule">
           {rows.map((row) => {
             const slug = String(row["slug"]);
-            const status = String(row["status"] ?? (row["published"] === false ? "draft" : "published"));
+            const status = String(
+              row["status"] ?? (row["published"] === false ? "draft" : "published"),
+            );
             return (
               <li key={slug} className="flex items-center justify-between gap-4 bg-paper py-3">
                 <div>
@@ -369,7 +385,9 @@ function TableEditor({ tab }: { tab: Tab }) {
                   </p>
                 </div>
                 <div className="flex shrink-0 gap-3 text-xs">
-                  <button className="link-underline" onClick={() => edit(row)}>Edit</button>
+                  <button className="link-underline" onClick={() => edit(row)}>
+                    Edit
+                  </button>
                   <button
                     className="link-underline text-destructive"
                     onClick={() => {
@@ -394,12 +412,7 @@ function TableEditor({ tab }: { tab: Tab }) {
         )}
 
         {draft && workflow && openRow && previewType && (
-          <WorkflowBar
-            table={table}
-            row={openRow}
-            previewType={previewType}
-            onChanged={refresh}
-          />
+          <WorkflowBar table={table} row={openRow} previewType={previewType} onChanged={refresh} />
         )}
 
         {draft && (
@@ -407,7 +420,9 @@ function TableEditor({ tab }: { tab: Tab }) {
             {fields.map((f) => (
               <div key={f.name}>
                 <div className="flex items-baseline justify-between gap-4">
-                  <label htmlFor={f.name} className="eyebrow">{f.label}</label>
+                  <label htmlFor={f.name} className="eyebrow">
+                    {f.label}
+                  </label>
                   {f.name === "slug" && (
                     <button
                       type="button"
@@ -518,7 +533,9 @@ function MarkdownField({
           rows={18}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={"## A heading\n\nWrite in markdown. **Bold**, _italic_, [links](https://…), lists and quotes all work."}
+          placeholder={
+            "## A heading\n\nWrite in markdown. **Bold**, _italic_, [links](https://…), lists and quotes all work."
+          }
           className="w-full border border-rule bg-transparent p-3 font-mono text-xs leading-relaxed outline-none focus:border-primary"
         />
         {showPreview && (
@@ -618,7 +635,9 @@ function WorkflowBar({
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <div>
-          <label htmlFor="schedule-at" className="eyebrow">Schedule for</label>
+          <label htmlFor="schedule-at" className="eyebrow">
+            Schedule for
+          </label>
           <input
             id="schedule-at"
             type="datetime-local"
@@ -687,7 +706,10 @@ function RevisionList({
       )}
       <ul className="mt-4 grid gap-px bg-rule">
         {(revisions.data ?? []).map((rev) => (
-          <li key={rev.id} className="flex items-center justify-between gap-4 bg-paper py-3 text-sm">
+          <li
+            key={rev.id}
+            className="flex items-center justify-between gap-4 bg-paper py-3 text-sm"
+          >
             <div>
               <p>{rev.note || "Snapshot"}</p>
               <p className="text-xs text-muted-foreground">
@@ -721,7 +743,10 @@ function ActivityLog() {
       {log.isLoading && <p className="mt-4 text-sm text-muted-foreground">Loading…</p>}
       <ul className="mt-6 grid gap-px bg-rule">
         {(log.data ?? []).map((entry) => (
-          <li key={entry.id} className="flex flex-wrap items-baseline justify-between gap-3 bg-paper py-3 text-sm">
+          <li
+            key={entry.id}
+            className="flex flex-wrap items-baseline justify-between gap-3 bg-paper py-3 text-sm"
+          >
             <span>
               <span className="text-primary">{entry.action}</span> · {entry.table_name} ·{" "}
               {entry.slug}
@@ -734,6 +759,78 @@ function ActivityLog() {
       </ul>
       {log.data?.length === 0 && (
         <p className="mt-6 text-sm text-muted-foreground">Nothing logged yet.</p>
+      )}
+    </section>
+  );
+}
+
+function MessageInbox() {
+  const queryClient = useQueryClient();
+  const list = useQuery({ queryKey: ["contact-messages"], queryFn: () => listContactMessages() });
+
+  const setRead = useMutation({
+    mutationFn: async (input: { id: string; read: boolean }) =>
+      setContactMessageRead({ data: input }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["contact-messages"] }),
+  });
+  const remove = useMutation({
+    mutationFn: async (id: string) => deleteContactMessage({ data: { id } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["contact-messages"] }),
+  });
+
+  const messages = list.data ?? [];
+  const unread = messages.filter((m) => !m.read).length;
+
+  return (
+    <section className="mt-10">
+      <h2 className="font-display text-2xl">
+        Messages {list.data ? `(${messages.length}${unread ? `, ${unread} unread` : ""})` : ""}
+      </h2>
+      {list.isLoading && <p className="mt-4 text-sm text-muted-foreground">Loading…</p>}
+      <ul className="mt-6 grid gap-px bg-rule">
+        {messages.map((m) => (
+          <li key={m.id} className={`bg-paper py-4 ${m.read ? "opacity-70" : ""}`}>
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <p className="text-sm">
+                {!m.read && (
+                  <span className="mr-2 text-primary" aria-label="Unread">
+                    ●
+                  </span>
+                )}
+                {m.name} ·{" "}
+                <a href={`mailto:${m.email}`} className="link-underline">
+                  {m.email}
+                </a>
+                {m.subject ? ` · ${m.subject}` : ""}
+              </p>
+              <span className="text-xs text-muted-foreground">
+                {new Date(m.created_at).toLocaleString()}
+              </span>
+            </div>
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">{m.message}</p>
+            <div className="mt-3 flex gap-4 text-xs">
+              <button
+                className="link-underline"
+                disabled={setRead.isPending}
+                onClick={() => setRead.mutate({ id: m.id, read: !m.read })}
+              >
+                {m.read ? "Mark unread" : "Mark read"}
+              </button>
+              <button
+                className="link-underline text-destructive"
+                disabled={remove.isPending}
+                onClick={() => {
+                  if (confirm(`Delete the message from ${m.name}?`)) remove.mutate(m.id);
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {list.data?.length === 0 && (
+        <p className="mt-6 text-sm text-muted-foreground">No messages yet.</p>
       )}
     </section>
   );
@@ -756,7 +853,10 @@ function SubscriberList() {
         {(list.data ?? []).map((s) => (
           <li key={s.id} className="flex items-center justify-between bg-paper py-3 text-sm">
             <span>{s.email}</span>
-            <button className="link-underline text-xs text-destructive" onClick={() => remove.mutate(s.id)}>
+            <button
+              className="link-underline text-xs text-destructive"
+              onClick={() => remove.mutate(s.id)}
+            >
               Remove
             </button>
           </li>

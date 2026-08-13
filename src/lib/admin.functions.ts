@@ -282,6 +282,52 @@ export const listAuditLog = createServerFn({ method: "GET" })
     return (data ?? []) as AuditEntry[];
   });
 
+export type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+};
+
+export const listContactMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const db = await assertAdmin(context as unknown as Ctx);
+    const { data, error } = await db
+      .from("contact_messages")
+      .select("id, name, email, subject, message, read, created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw new Error(error.message);
+    return (data ?? []) as ContactMessage[];
+  });
+
+export const setContactMessageRead = createServerFn({ method: "POST" })
+  .inputValidator((input) => z.object({ id: z.string().uuid(), read: z.boolean() }).parse(input))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const db = await assertAdmin(context as unknown as Ctx);
+    const { error } = await db
+      .from("contact_messages")
+      .update({ read: data.read })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteContactMessage = createServerFn({ method: "POST" })
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const db = await assertAdmin(context as unknown as Ctx);
+    const { error } = await db.from("contact_messages").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const listSubscribers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
