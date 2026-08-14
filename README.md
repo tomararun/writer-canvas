@@ -1,195 +1,132 @@
 # The Writer's Canvas
 
-You are a senior full-stack product designer, UX architect, and engineer.
-
-Build a complete personal writer website for me from scratch. This site should function as:
-
-1. A personal writing portfolio.
-
-2. A blog for essays, tutorials, reflections, and opinions.
-
-3. A project case study hub.
-
-4. A learning journal documenting my journey.
-
-5. A professional homepage that introduces me as a writer.
-
-Goal:
-
-Create a modern, elegant, fast, responsive, SEO-friendly, full-stack website that feels personal, editorial, and premium.
-
-Target user:
-
-Visitors who want to understand who I am, what I write, what I have built, and what I am learning.
-
-Primary goals:
-
-- Showcase my best writing.
-
-- Present project case studies with deep process breakdowns.
-
-- Document my learning journey over time.
-
-- Help visitors understand my personality, writing style, and growth.
-
-- Make it easy to browse by category, tag, topic, and date.
-
-Brand direction:
-
-- Style: minimal, editorial, calm, premium, modern.
-
-- Tone: intelligent, thoughtful, human, reflective.
-
-- Layout: spacious, readable, image-forward, content-first.
-
-- Visual mood: writer’s notebook, creative studio, personal knowledge base.
-
-Create the following pages:
-
-- Home
-
-- About
-
-- Writing index
-
-- Single blog post page
-
-- Case studies index
-
-- Single case study page
-
-- Learning journal index
-
-- Single journal entry page
-
-- Projects index
-
-- Archive page
-
-- Contact page
-
-- Newsletter signup area
-
-- Search results page
-
-- 404 page
-
-For each page, provide:
-
-1. Layout structure.
-
-2. Section order.
-
-3. Copy suggestions.
-
-4. Component list.
-
-5. Responsive behavior.
-
-6. SEO notes.
-
-7. Accessibility notes.
-
-Content requirements:
-
-- Home page should feature an intro, featured writings, featured case studies, and current learning.
-
-- About page should include a bio, writing themes, tools, timeline, and values.
-
-- Writing pages should support categories, tags, reading time, related posts, and share links.
-
-- Case study pages should include background, problem, role, process, implementation, outcomes, metrics, learnings, and gallery.
-
-- Learning journal pages should include date, topic, reflection, resources, and related entries.
-
-- Archive page should support filters by type, category, tag, and date.
-
-- Contact page should include a form, social links, and collaboration note.
-
-Technical requirements:
-
-- Use a modern full-stack architecture.
-
-- Recommend a suitable frontend, backend, CMS, database, authentication, and deployment stack.
-
-- Include content models and schema design.
-
-- Include API routes or server actions.
-
-- Include admin/editing workflow.
-
-- Include SEO, Open Graph, sitemap, RSS, structured data, and analytics.
-
-- Include search functionality.
-
-- Include image handling and optimized media delivery.
-
-- Include draft and publish workflow.
-
-- Include role-based access if needed.
-
-- Include test strategy.
-
-- Include deployment steps.
-
-- Include environment variables list.
-
-Output format:
-
-First, give me:
-
-1. A complete product requirements document.
-
-2. A sitemap.
-
-3. A content model/schema.
-
-4. A recommended tech stack.
-
-5. A database design.
-
-6. A full page-by-page UX plan.
-
-7. A build roadmap in phases.
-
-8. A reusable prompt pack for generating the UI, backend, CMS, and deployment.
-
-9. A final implementation checklist.
-
-Important:
-
-- Be specific.
-
-- Use clear headings.
-
-- Use tables where useful.
-
-- Make this ready to hand to a developer or to an AI coding agent.
-
-- If you need to make assumptions, state them clearly.
-
-- Prioritize clarity, scalability, and content-first design.
+A complete, self-hosted personal writing platform — portfolio, blog, case
+study hub, and learning journal — with a private publishing studio behind it.
+
+**Live site:** https://writer-canvas.tomararun202.workers.dev
+
+> The visible content is still a placeholder persona ("Maya Ellsworth") used
+> to design and test the platform. Replace it with your own writing in
+> [`src/content/site.ts`](src/content/site.ts) and through the Studio.
+
+## What the platform does
+
+### Public site
+
+- **Home, About, Contact** plus indexes and detail pages for **Writing**
+  (essays), **Case studies**, **Learning journal**, and **Projects**
+- **Archive** with filters, client-side **Search**, and a designed 404
+- **Contact form** that stores messages for the admin (with honeypot
+  spam protection) — no submission is ever silently dropped
+- **Newsletter signup** collecting subscribers into the database
+- **SEO throughout**: absolute canonical URLs, Open Graph + Twitter cards with
+  a generated 1200×630 social image, JSON-LD structured data on detail pages,
+  **RSS feed**, **sitemap.xml**, and **robots.txt** — all with absolute URLs
+  derived from the deployment origin
+- **Privacy-friendly first-party analytics**: one row per page view (path +
+  referrer only, no cookies, no user identifiers), private routes excluded
+
+### The Studio (`/admin`)
+
+A full CMS behind email/password auth — reachable from the discreet
+**Studio** link in the footer:
+
+- **Editorial workflow**: Draft → In review → Scheduled → Published, with
+  one-click publish/unpublish
+- **Scheduled publishing** that actually fires: a `pg_cron` job inside the
+  database publishes due entries every minute — no external services
+- **Markdown editor** with live preview; headings, lists, quotes, code and
+  images all styled on the public pages
+- **Private previews**: secret tokenized links show unpublished work to
+  anyone you send them to — the token is the credential
+- **Media library**: upload images, copy stable URLs or ready-to-paste
+  markdown; files are served through the app (`/media/…`) so links never
+  expire regardless of storage-bucket visibility
+- **Revision history** with snapshots before every save/delete and
+  one-click restore
+- **Audit log** of every content action with actor and timestamp
+- **Messages inbox** for contact-form submissions (read/unread, delete)
+- **Subscriber list** management
+- **Traffic report**: 30-day totals, daily bars, top pages — computed
+  in-database, raw rows never leave Postgres
+
+### Security model
+
+- **Single admin seat**: the first authenticated account claims it; the
+  sign-in page stops offering registration once the seat is taken
+- **Role-based access enforced in the database**: every table carries
+  row-level-security policies; server functions re-verify the admin role on
+  every call — authorization is never UI-only
+- **No service-role key anywhere**: previews, scheduled publishing, and the
+  contact form run on the publishable key with `SECURITY DEFINER` functions
+  that guard themselves. Verified: no email-bearing table is readable
+  anonymously
+- **Password reset** flow (`/auth` → "Forgot password?" → email link →
+  `/auth/reset`)
 
 ## Stack
 
-TanStack Start (React 19, file-based routing, server functions) + Supabase
-(Postgres, auth, storage) + Tailwind CSS v4, built with Vite and deployed as a
-Nitro output (Cloudflare-ready by default).
+| Layer                     | Choice                                                                                        |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| Framework                 | [TanStack Start](https://tanstack.com/start) (React 19, file-based routing, server functions) |
+| Database / Auth / Storage | [Supabase](https://supabase.com) (Postgres with RLS, pg_cron)                                 |
+| Styling                   | Tailwind CSS v4, Newsreader + Work Sans                                                       |
+| Build / Deploy            | Vite → Nitro → **Cloudflare Workers**                                                         |
+| Tests                     | Vitest (unit tests over markdown, URL, and data-mapping logic)                                |
+
+## How it got here
+
+The project began as a Lovable-generated scaffold with polished pages but
+several features that looked finished and weren't. It has since been
+completed, hardened, and made **fully independent**:
+
+1. **Unwired features fixed** — scheduling had no trigger (added pg_cron),
+   the contact form discarded submissions (now stored + inboxed), previews
+   and feeds emitted broken or relative URLs (fixed at the root)
+2. **Production features added** — password reset, media uploads, first-party
+   analytics, honest newsletter copy, OG image, robots.txt, signup
+   hardening, unit tests, deployment docs
+3. **Independence** — migrated to a self-owned Supabase project (all 9
+   migrations + content), replaced the proprietary build wrapper with
+   standard Vite plugins, removed all Lovable artifacts and telemetry, and
+   deployed to Cloudflare Workers under the owner's own account
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+npm install
+npm run dev        # dev server at http://localhost:8080
+npm test           # unit tests (Vitest)
+npm run lint       # ESLint + Prettier rules
+npm run build      # production build (.output/, Cloudflare-ready)
 ```
 
-Run the unit tests with `npm test`.
+Environment variables live in `.env` (safe, publishable values only) — see
+the table in [DEPLOYMENT.md](./DEPLOYMENT.md). Secrets (database password,
+service-role key for admin scripts) belong in the git-ignored `.env.local`.
+
+Database schema lives in [`supabase/migrations/`](supabase/migrations/) —
+every table, policy, function, and the cron job are reproducible from these
+files alone.
 
 ## Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for environment variables, database
-migrations, Supabase dashboard settings, and the post-deploy smoke test.
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full runbook: environment
+variables, applying migrations, Supabase auth settings, the exact
+`wrangler deploy` command, first-run seat claiming, and a post-deploy
+smoke-test checklist.
+
+## Repository layout
+
+```
+src/
+  routes/            file-based routes (public pages, /admin studio,
+                     RSS/sitemap/robots/media endpoints, API hooks)
+  lib/               server functions, content mappers, markdown, SEO,
+                     analytics, tests
+  components/        header/footer, cards, prose renderer, UI primitives
+  integrations/      Supabase clients (browser, server, auth middleware)
+  content/           site metadata + placeholder seed content
+supabase/migrations/ complete database schema as SQL
+scripts/             OG-image generator
+```
