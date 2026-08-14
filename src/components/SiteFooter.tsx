@@ -64,12 +64,7 @@ export function SiteFooter() {
           <p>
             © {new Date().getFullYear()} {site.name}. Written in {site.location}.
           </p>
-          <p>
-            Set in Newsreader &amp; Work Sans. ·{" "}
-            <Link to="/auth" className="link-underline">
-              Studio
-            </Link>
-          </p>
+          <p>Set in Newsreader &amp; Work Sans.</p>
         </div>
       </div>
     </footer>

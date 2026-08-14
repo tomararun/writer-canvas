@@ -28,8 +28,9 @@ study hub, and learning journal — with a private publishing studio behind it.
 
 ### The Studio (`/admin`)
 
-A full CMS behind email/password auth — reachable from the discreet
-**Studio** link in the footer:
+A full CMS behind email/password auth. There is deliberately **no visible
+link to it anywhere on the site** — the admin reaches it by typing `/admin`
+directly (bookmark it):
 
 - **Editorial workflow**: Draft → In review → Scheduled → Published, with
   one-click publish/unpublish

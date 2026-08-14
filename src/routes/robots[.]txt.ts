@@ -8,12 +8,13 @@ export const Route = createFileRoute("/robots.txt")({
         const { getSiteOrigin } = await import("@/lib/site-url.server");
         const origin = getSiteOrigin(request);
 
+        // Private surfaces (/admin, /auth, /preview) are deliberately NOT
+        // listed here: naming them would advertise their existence, and each
+        // already carries a noindex meta tag — which crawlers can only obey
+        // if they are allowed to fetch the page.
         const body = [
           "User-agent: *",
           "Allow: /",
-          "Disallow: /admin",
-          "Disallow: /auth",
-          "Disallow: /preview/",
           "Disallow: /api/",
           "",
           `Sitemap: ${origin}/sitemap.xml`,
