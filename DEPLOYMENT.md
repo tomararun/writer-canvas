@@ -48,15 +48,35 @@ These live outside the repo — set them once per project:
    The sign-in page already hides account creation once the seat is taken, and
    stray accounts can never reach admin — disabling sign-ups is defence in depth.
 
-## 4. First deploy
+## 4. Deploying (Cloudflare Workers)
 
-1. Deploy the app (`npm run build` produces `.output/`; Lovable/Netlify/Vercel/
-   Cloudflare all work with the generated Nitro output).
-2. Visit `/auth`, create the studio account, confirm the email.
-3. Open `/admin` and **claim the admin seat immediately** — the first
+The production site runs at **https://writer-canvas.tomararun202.workers.dev**.
+To ship a new version from the project root:
+
+```sh
+npm run build
+npx wrangler deploy --name writer-canvas \
+  --var "SUPABASE_URL:<from .env>" \
+  --var "SUPABASE_PUBLISHABLE_KEY:<from .env>" \
+  --var "SITE_URL:https://writer-canvas.tomararun202.workers.dev"
+```
+
+Notes:
+
+- `wrangler login` once per machine.
+- `--var` values persist per deploy; re-pass them every time (or move them to
+  the Cloudflare dashboard under Worker → Settings → Variables).
+- When a custom domain arrives: add it to the Worker (Settings → Domains),
+  update `SITE_URL`/`VITE_SITE_URL` in `.env`, rebuild, redeploy, and update
+  the Supabase auth Site URL and redirect allow-list to match.
+
+## 5. First-run
+
+1. Visit `/auth`, create the studio account, confirm the email.
+2. Open `/admin` and **claim the admin seat immediately** — the first
    authenticated account to claim it wins.
 
-## 5. Smoke test
+## 6. Smoke test
 
 Run through once after every production deploy:
 
@@ -69,14 +89,14 @@ Run through once after every production deploy:
 - [ ] Browse a few public pages → counts appear under Studio → Traffic.
 - [ ] Check `/robots.txt` references your sitemap.
 
-## 6. Media storage
+## 7. Media storage
 
 Uploaded images are served through the app's own `/media/<file>` route rather
 than direct storage URLs, so it makes no difference whether the `media` bucket
 is public or private (some workspaces force private buckets). Links copied
 from Studio → Media are stable and never expire.
 
-## 7. Assets
+## 8. Assets
 
 The social-sharing card is `public/og-default.png`. After replacing the
 placeholder content with your own name and tagline, regenerate it with
