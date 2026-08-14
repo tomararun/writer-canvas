@@ -65,7 +65,14 @@ Run through once after every production deploy:
 - [ ] Browse a few public pages → counts appear under Studio → Traffic.
 - [ ] Check `/robots.txt` references your sitemap.
 
-## 6. Assets
+## 6. Media storage
+
+Uploaded images are served through the app's own `/media/<file>` route rather
+than direct storage URLs, so it makes no difference whether the `media` bucket
+is public or private (some workspaces force private buckets). Links copied
+from Studio → Media are stable and never expire.
+
+## 7. Assets
 
 The social-sharing card is `public/og-default.png`. After replacing the
 placeholder content with your own name and tagline, regenerate it with

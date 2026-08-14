@@ -26,6 +26,7 @@ import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.inde
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug'
 import { Route as JournalIndexRouteImport } from './routes/journal.index'
 import { Route as JournalSlugRouteImport } from './routes/journal.$slug'
+import { Route as MediaSplatRouteImport } from './routes/media.$'
 import { Route as WritingIndexRouteImport } from './routes/writing.index'
 import { Route as WritingSlugRouteImport } from './routes/writing.$slug'
 import { Route as PreviewTypeSlugRouteImport } from './routes/preview.$type.$slug'
@@ -115,6 +116,11 @@ const JournalSlugRoute = JournalSlugRouteImport.update({
   path: '/journal/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MediaSplatRoute = MediaSplatRouteImport.update({
+  id: '/media/$',
+  path: '/media/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WritingIndexRoute = WritingIndexRouteImport.update({
   id: '/writing/',
   path: '/writing/',
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset': typeof AuthResetRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/journal/$slug': typeof JournalSlugRoute
+  '/media/$': typeof MediaSplatRoute
   '/writing/$slug': typeof WritingSlugRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/journal/': typeof JournalIndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/auth/reset': typeof AuthResetRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/journal/$slug': typeof JournalSlugRoute
+  '/media/$': typeof MediaSplatRoute
   '/writing/$slug': typeof WritingSlugRoute
   '/case-studies': typeof CaseStudiesIndexRoute
   '/journal': typeof JournalIndexRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/auth/reset': typeof AuthResetRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/journal/$slug': typeof JournalSlugRoute
+  '/media/$': typeof MediaSplatRoute
   '/writing/$slug': typeof WritingSlugRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/journal/': typeof JournalIndexRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/case-studies/$slug'
     | '/journal/$slug'
+    | '/media/$'
     | '/writing/$slug'
     | '/case-studies/'
     | '/journal/'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/case-studies/$slug'
     | '/journal/$slug'
+    | '/media/$'
     | '/writing/$slug'
     | '/case-studies'
     | '/journal'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/case-studies/$slug'
     | '/journal/$slug'
+    | '/media/$'
     | '/writing/$slug'
     | '/case-studies/'
     | '/journal/'
@@ -289,6 +301,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
   JournalSlugRoute: typeof JournalSlugRoute
+  MediaSplatRoute: typeof MediaSplatRoute
   WritingSlugRoute: typeof WritingSlugRoute
   CaseStudiesIndexRoute: typeof CaseStudiesIndexRoute
   JournalIndexRoute: typeof JournalIndexRoute
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JournalSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/media/$': {
+      id: '/media/$'
+      path: '/media/$'
+      fullPath: '/media/$'
+      preLoaderRoute: typeof MediaSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/writing/': {
       id: '/writing/'
       path: '/writing'
@@ -484,6 +504,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CaseStudiesSlugRoute: CaseStudiesSlugRoute,
   JournalSlugRoute: JournalSlugRoute,
+  MediaSplatRoute: MediaSplatRoute,
   WritingSlugRoute: WritingSlugRoute,
   CaseStudiesIndexRoute: CaseStudiesIndexRoute,
   JournalIndexRoute: JournalIndexRoute,

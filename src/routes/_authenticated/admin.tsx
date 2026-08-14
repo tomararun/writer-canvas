@@ -884,8 +884,11 @@ function MediaLibrary() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["media"] }),
   });
 
+  // Served through the app's /media/$ route: stable URLs that keep working
+  // whether the storage bucket is public or private.
   function publicUrl(name: string) {
-    return supabase.storage.from("media").getPublicUrl(name).data.publicUrl;
+    const path = `/media/${encodeURIComponent(name)}`;
+    return typeof window !== "undefined" ? window.location.origin + path : path;
   }
 
   async function copy(text: string, name: string) {
