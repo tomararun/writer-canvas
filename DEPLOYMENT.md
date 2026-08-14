@@ -19,11 +19,15 @@ contact form all run on the publishable key with database-side authorization.
 
 ## 2. Database migrations
 
-Apply every file in `supabase/migrations/` in filename order. Three ways:
+Apply every file in `supabase/migrations/` in filename order. Two ways:
 
-- **Lovable Cloud** — syncs and applies migrations from the repo.
-- **Supabase CLI** — `supabase link --project-ref <ref>` then `supabase db push`.
+- **Supabase CLI** — `supabase link --project-ref <ref>` then `supabase db push`
+  (if direct connections fail on IPv4-only networks, pass the session-pooler
+  `--db-url` shown in the dashboard under Connect).
 - **SQL editor** — paste each file's contents in order.
+
+The linked project is `fnfxovfmidwiuvlcwqvd` (owned by your Supabase account);
+all migrations are already applied there.
 
 What the newer migrations set up: workflow columns and revisions/audit tables,
 the pg_cron job that publishes scheduled entries every minute, the

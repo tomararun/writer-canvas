@@ -170,15 +170,11 @@ Important:
 
 - Prioritize clarity, scalability, and content-first design.
 
-This project was built with [Lovable](https://lovable.dev).
+## Stack
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/77424aa0-409f-4cea-95de-474975b6a39e).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+TanStack Start (React 19, file-based routing, server functions) + Supabase
+(Postgres, auth, storage) + Tailwind CSS v4, built with Vite and deployed as a
+Nitro output (Cloudflare-ready by default).
 
 ## Development
 
