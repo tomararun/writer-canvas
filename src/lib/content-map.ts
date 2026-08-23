@@ -12,7 +12,8 @@ export type SiteContent = {
 type Row = Record<string, unknown>;
 
 const str = (v: unknown, fallback = "") => (typeof v === "string" ? v : fallback);
-const strArr = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
+const strArr = (v: unknown) =>
+  Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
 
 export function mapPost(row: Row): Post {
   return {
