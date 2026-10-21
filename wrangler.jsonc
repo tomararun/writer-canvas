@@ -12,4 +12,14 @@
     "SUPABASE_PUBLISHABLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZnhvdmZtaWR3aXV2bGN3cXZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDM1MjMsImV4cCI6MjEwMjI3OTUyM30.RaZA4J7gZmXJVS0EPRIxwPsXb4Lg25Yk15BCmE3rY98",
     "SITE_URL": "https://writer-canvas.tomararun202.workers.dev",
   },
+  // Used by `wrangler preview` (staging builds). There is one Supabase project,
+  // so previews share the production database — see DEPLOYMENT.md. SITE_URL is
+  // left empty so feeds and sitemaps use the preview's own origin.
+  "previews": {
+    "vars": {
+      "SUPABASE_URL": "https://fnfxovfmidwiuvlcwqvd.supabase.co",
+      "SUPABASE_PUBLISHABLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZnhvdmZtaWR3aXV2bGN3cXZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDM1MjMsImV4cCI6MjEwMjI3OTUyM30.RaZA4J7gZmXJVS0EPRIxwPsXb4Lg25Yk15BCmE3rY98",
+      "SITE_URL": "",
+    },
+  },
 }

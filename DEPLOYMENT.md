@@ -78,13 +78,14 @@ Settings → Builds:
 2. **Production branch:** `production`.
 3. **Build command:** `npm run build`
 4. **Deploy command:** `npx wrangler deploy`
-5. **Non-production branch builds:** enabled, with deploy command
-   `npx wrangler versions upload` (this gives `staging` preview URLs).
+5. **Previews Base** tab (every branch except `production`): deploy command
+   `npx wrangler preview`, which gives `staging` its own preview URL.
 
 No build variables are needed: the `VITE_*` values come from the committed
 `.env`, and the Worker's name, runtime variables and compatibility date come
 from the committed [`wrangler.jsonc`](./wrangler.jsonc), which the build merges
-into `.output/server/wrangler.json`.
+into `.output/server/wrangler.json`. `wrangler preview` refuses to run without
+the `previews` block in that file, which holds the variables previews get.
 
 **Previews share the production database.** A staging preview reads and
 writes the same Supabase project as the live site — anything published or
