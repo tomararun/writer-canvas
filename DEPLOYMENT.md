@@ -51,24 +51,60 @@ These live outside the repo — set them once per project:
 ## 4. Deploying (Cloudflare Workers)
 
 The production site runs at **https://writer-canvas.tomararun202.workers.dev**.
-To ship a new version from the project root:
+
+### Branches
+
+| Branch       | Role                                                          |
+| ------------ | ------------------------------------------------------------- |
+| `staging`    | Day-to-day work. Each push uploads a preview version.         |
+| `production` | The live site. Each push deploys to production automatically. |
+
+To publish: merge `staging` into `production` and push.
+
+```sh
+git checkout production
+git merge --ff-only staging
+git push origin production
+git checkout staging
+```
+
+### How it deploys
+
+Deploys run on Cloudflare via **Workers Builds** (Git integration). One-time
+setup in the Cloudflare dashboard → Workers & Pages → `writer-canvas` →
+Settings → Builds:
+
+1. **Connect** the GitHub repo `tomararun/writer-canvas`.
+2. **Production branch:** `production`.
+3. **Build command:** `npm run build`
+4. **Deploy command:** `npx wrangler deploy`
+5. **Non-production branch builds:** enabled, with deploy command
+   `npx wrangler versions upload` (this gives `staging` preview URLs).
+
+No build variables are needed: the `VITE_*` values come from the committed
+`.env`, and the Worker's name, runtime variables and compatibility date come
+from the committed [`wrangler.jsonc`](./wrangler.jsonc), which the build merges
+into `.output/server/wrangler.json`.
+
+**Previews share the production database.** A staging preview reads and
+writes the same Supabase project as the live site — anything published or
+deleted from a preview's studio is real.
+
+### Deploying by hand
+
+Still works from any machine (`npx wrangler login` once first):
 
 ```sh
 npm run build
-npx wrangler deploy --name writer-canvas \
-  --var "SUPABASE_URL:<from .env>" \
-  --var "SUPABASE_PUBLISHABLE_KEY:<from .env>" \
-  --var "SITE_URL:https://writer-canvas.tomararun202.workers.dev"
+npx wrangler deploy
 ```
 
-Notes:
+### Custom domain
 
-- `wrangler login` once per machine.
-- `--var` values persist per deploy; re-pass them every time (or move them to
-  the Cloudflare dashboard under Worker → Settings → Variables).
-- When a custom domain arrives: add it to the Worker (Settings → Domains),
-  update `SITE_URL`/`VITE_SITE_URL` in `.env`, rebuild, redeploy, and update
-  the Supabase auth Site URL and redirect allow-list to match.
+When one arrives: add it to the Worker (Settings → Domains), update
+`SITE_URL` in `wrangler.jsonc` and `SITE_URL`/`VITE_SITE_URL` in `.env`,
+push to `production`, then update the Supabase auth Site URL and redirect
+allow-list to match.
 
 ## 5. First-run
 
