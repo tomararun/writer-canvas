@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/auth/reset")({
+export const Route = createFileRoute("/auth_/reset")({
   ssr: false,
   head: () => ({
     meta: [
