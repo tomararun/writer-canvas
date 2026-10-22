@@ -7,6 +7,9 @@ export const site = {
   socials: [
     { label: "Newsletter", href: "#newsletter" },
     { label: "RSS", href: "/rss.xml" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/arunkumartomar/" },
+    { label: "GitHub", href: "https://github.com/tomararun" },
+    { label: "X", href: "https://x.com/tomarrarun" },
   ],
 };
 
