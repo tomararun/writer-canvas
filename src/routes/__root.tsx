@@ -1,3 +1,4 @@
+import { site } from "@/content/site";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -82,13 +83,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Maya Ellsworth — Writer" },
+      { title: `${site.name} — Writer` },
       {
         name: "description",
-        content: "Essays, case studies, and a public learning journal on craft and attention.",
+        content: site.tagline,
       },
-      { name: "author", content: "Maya Ellsworth" },
-      { property: "og:site_name", content: "Maya Ellsworth" },
+      { name: "author", content: site.name },
+      { property: "og:site_name", content: site.name },
       { property: "og:type", content: "website" },
       { property: "og:image", content: OG_IMAGE },
       { property: "og:image:width", content: "1200" },

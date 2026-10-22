@@ -14,7 +14,7 @@ export const Route = createFileRoute("/contact")({
         content:
           "Get in touch about editorial commissions, content architecture work, speaking, or just to argue with something I wrote.",
       },
-      { property: "og:title", content: "Contact — Maya Ellsworth" },
+      { property: "og:title", content: `Contact — ${site.name}` },
       { property: "og:description", content: "Commissions, collaborations, and correspondence." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: absoluteUrl("/contact") },

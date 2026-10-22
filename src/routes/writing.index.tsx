@@ -16,8 +16,7 @@ export const Route = createFileRoute("/writing/")({
       { title: "Writing — Essays, tutorials & reflections" },
       {
         name: "description",
-        content:
-          "Every essay, tutorial, reflection, and opinion, browsable by category and tag. Long-form writing on craft, attention, and systems.",
+        content: "Every essay, tutorial, reflection, and opinion, browsable by category and tag.",
       },
       { property: "og:title", content: "Writing — Essays, tutorials & reflections" },
       { property: "og:description", content: "Browse essays by category and tag." },

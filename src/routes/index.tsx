@@ -7,16 +7,15 @@ import { useContent } from "@/lib/content";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Maya Ellsworth — Writer on craft, attention & systems" },
+      { title: `${site.name} — Writer` },
       {
         name: "description",
-        content:
-          "Essays, case studies, and a public learning journal from Maya Ellsworth, a writer working on craft, attention, and the systems we build to think.",
+        content: `Essays, case studies, and a public learning journal from ${site.name}. ${site.tagline}`,
       },
-      { property: "og:title", content: "Maya Ellsworth — Writer on craft, attention & systems" },
+      { property: "og:title", content: `${site.name} — Writer` },
       {
         property: "og:description",
-        content: "Essays, case studies, and a public learning journal on craft and attention.",
+        content: site.tagline,
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: absoluteUrl("/") },
@@ -56,8 +55,8 @@ function Home() {
               I write about the quiet work behind good thinking.
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              {site.tagline} Fifteen years of essays, editorial systems, and notebooks — published
-              here in the open, revisions and all.
+              {site.tagline} Essays, notes, and the things I am learning and building, collected
+              here as I go.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link

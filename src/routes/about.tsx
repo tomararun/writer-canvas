@@ -6,13 +6,12 @@ import { site } from "@/content/site";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Maya Ellsworth, writer and editorial architect" },
+      { title: `About — ${site.name}` },
       {
         name: "description",
-        content:
-          "Bio, writing themes, tools, timeline, and values of Maya Ellsworth — a writer working on craft, attention, and editorial systems.",
+        content: `About ${site.name}: ${site.role}.`,
       },
-      { property: "og:title", content: "About — Maya Ellsworth" },
+      { property: "og:title", content: `About — ${site.name}` },
       { property: "og:description", content: "Bio, themes, tools, timeline, and values." },
       { property: "og:type", content: "profile" },
       { property: "og:url", content: absoluteUrl("/about") },
@@ -63,7 +62,7 @@ function About() {
       <PageHeader
         eyebrow="About"
         title="I make things easier to read and harder to forget."
-        intro={`I'm ${site.name}, a writer and editorial architect in ${site.location}. For fifteen years I have worked on the same problem from different angles: how to make a complicated thing land in someone else's head without flattening it.`}
+        intro={`I'm ${site.name}, based in ${site.location}. ${site.role}.`}
       />
 
       <section className="wrap py-16 md:py-24">

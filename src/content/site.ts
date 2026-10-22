@@ -1,14 +1,12 @@
 export const site = {
-  name: "Maya Ellsworth",
-  role: "Writer, systems thinker, occasional builder",
-  tagline: "Essays on craft, attention, and the systems we build to think.",
-  email: "hello@mayaellsworth.com",
-  location: "Lisbon, Portugal",
+  name: "Arun Tomar",
+  role: "Writer and curator of what I learn, build, and find worth sharing",
+  tagline: "Everything worth writing down, shared in the open.",
+  email: "workwithbanas@gmail.com",
+  location: "Noida, India",
   socials: [
     { label: "Newsletter", href: "#newsletter" },
     { label: "RSS", href: "/rss.xml" },
-    { label: "Bluesky", href: "https://bsky.app" },
-    { label: "GitHub", href: "https://github.com" },
   ],
 };
 
@@ -148,11 +146,27 @@ export const caseStudies: CaseStudy[] = [
     problem:
       "Long features were being abandoned at 20% scroll. The archive was invisible to search, and the voice shifted between contributors with no shared spine.",
     process: [
-      { step: "Audit", detail: "Read 180 published pieces and coded them for structure, promise, and payoff." },
-      { step: "Interviews", detail: "Twelve readers, six contributors, two editors. Asked what they skipped and why." },
-      { step: "Voice guide", detail: "Wrote a 14-page guide with worked before/after examples rather than adjectives." },
-      { step: "Templates", detail: "Three article shapes: the dispatch, the explainer, the argument." },
-      { step: "Pilot", detail: "Ran six pieces through the new system and measured scroll depth against a matched control." },
+      {
+        step: "Audit",
+        detail: "Read 180 published pieces and coded them for structure, promise, and payoff.",
+      },
+      {
+        step: "Interviews",
+        detail: "Twelve readers, six contributors, two editors. Asked what they skipped and why.",
+      },
+      {
+        step: "Voice guide",
+        detail: "Wrote a 14-page guide with worked before/after examples rather than adjectives.",
+      },
+      {
+        step: "Templates",
+        detail: "Three article shapes: the dispatch, the explainer, the argument.",
+      },
+      {
+        step: "Pilot",
+        detail:
+          "Ran six pieces through the new system and measured scroll depth against a matched control.",
+      },
     ],
     implementation: [
       "Rebuilt the article template around a standing dek, a pull-through question, and section markers every 600 words.",
@@ -193,10 +207,22 @@ export const caseStudies: CaseStudy[] = [
     problem:
       "Support deflection had plateaued. Readers landed from search on the wrong article and bounced rather than navigating.",
     process: [
-      { step: "Card sort", detail: "Open sort with 60 users produced four durable top-level groupings." },
-      { step: "Content inventory", detail: "Tagged every article by job-to-be-done and last verified date." },
-      { step: "Pruning", detail: "Merged or retired 210 articles; wrote redirects for all of them." },
-      { step: "Pattern library", detail: "Task, concept, and troubleshooting patterns with strict opening sentences." },
+      {
+        step: "Card sort",
+        detail: "Open sort with 60 users produced four durable top-level groupings.",
+      },
+      {
+        step: "Content inventory",
+        detail: "Tagged every article by job-to-be-done and last verified date.",
+      },
+      {
+        step: "Pruning",
+        detail: "Merged or retired 210 articles; wrote redirects for all of them.",
+      },
+      {
+        step: "Pattern library",
+        detail: "Task, concept, and troubleshooting patterns with strict opening sentences.",
+      },
     ],
     implementation: [
       "Each article opens with the outcome, not the feature name.",
@@ -235,8 +261,14 @@ export const caseStudies: CaseStudy[] = [
       "Every growth playbook I read optimised for the wrong thing — arrival rather than return.",
     process: [
       { step: "Cadence", detail: "One essay a week, same hour, for 104 weeks." },
-      { step: "Feedback loop", detail: "Read every reply; kept a file of the sentences readers quoted back." },
-      { step: "Format tests", detail: "Tried five formats and kept the two with the highest reply rate." },
+      {
+        step: "Feedback loop",
+        detail: "Read every reply; kept a file of the sentences readers quoted back.",
+      },
+      {
+        step: "Format tests",
+        detail: "Tried five formats and kept the two with the highest reply rate.",
+      },
     ],
     implementation: [
       "Wrote the subject line last, from the strongest sentence in the piece.",
