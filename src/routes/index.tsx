@@ -50,13 +50,13 @@ function Home() {
       <section className="border-b border-rule bg-paper">
         <div className="wrap grid gap-12 py-20 md:grid-cols-[1.4fr_1fr] md:py-32">
           <div>
-            <p className="eyebrow">Writer · Editor · {site.location}</p>
-            <h1 className="mt-6 max-w-[15ch] font-display text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
-              I write about the quiet work behind good thinking.
+            <p className="eyebrow">Developer · Writer · {site.location}</p>
+            <h1 className="mt-6 max-w-[18ch] font-display text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
+              Building software, writing down what it teaches me.
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              {site.tagline} Essays, notes, and the things I am learning and building, collected
-              here as I go.
+              Case studies, tech stacks, and learning notes from a full-stack developer moving into
+              DevOps, plus essays on whatever else I'm learning.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
@@ -78,18 +78,19 @@ function Home() {
             <p className="eyebrow">Currently</p>
             <ul className="mt-4 grid gap-4 text-sm leading-relaxed">
               <li>
-                <span className="text-muted-foreground">Writing</span>
-                <br />A long essay on attention as a craft skill.
+                <span className="text-muted-foreground">Building</span>
+                <br />
+                Web applications with React, Node.js, and TypeScript.
               </li>
               <li>
                 <span className="text-muted-foreground">Learning</span>
                 <br />
-                Typography, interviewing, and just enough SQL.
+                DevOps and cloud-native tools.
               </li>
               <li>
-                <span className="text-muted-foreground">Reading</span>
+                <span className="text-muted-foreground">Writing</span>
                 <br />
-                Ways of Seeing, again, slower this time.
+                Documentation and guides for developer tools and SaaS teams.
               </li>
             </ul>
           </aside>

@@ -8,14 +8,17 @@ import { sendContactMessage } from "@/lib/content.functions";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Commissions, collaborations & correspondence" },
+      { title: `Contact — ${site.name}` },
       {
         name: "description",
         content:
-          "Get in touch about editorial commissions, content architecture work, speaking, or just to argue with something I wrote.",
+          "Get in touch about technical writing for developer tools and SaaS teams, explaining a complex project, or something you read here.",
       },
       { property: "og:title", content: `Contact — ${site.name}` },
-      { property: "og:description", content: "Commissions, collaborations, and correspondence." },
+      {
+        property: "og:description",
+        content: "Technical writing, project explainers, and conversations.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: absoluteUrl("/contact") },
       { name: "twitter:card", content: "summary_large_image" },
@@ -58,15 +61,31 @@ function Contact() {
     <>
       <PageHeader
         eyebrow="Contact"
-        title="Say something specific and I'll almost always reply."
-        intro="Commissions, editorial systems work, speaking, or a disagreement with a paragraph — all welcome. I read everything, usually within a week."
-      />
+        title="Get in touch."
+        intro="Technical writing, explaining a complex project, or a conversation about something you read here."
+      >
+        <div className="mt-10 max-w-2xl">
+          <p className="eyebrow">Get in touch if you need</p>
+          <ol className="mt-4 grid list-decimal gap-3 pl-5 text-base leading-relaxed marker:text-primary">
+            <li>
+              Technical writing for developer tools, SaaS products, or engineering teams, such as
+              documentation, guides, and tutorials.
+            </li>
+            <li>
+              A writer who can explain a complex project or stack to a non-technical audience.
+            </li>
+            <li>
+              A conversation about a project, a case study, or something you read here and want to
+              discuss.
+            </li>
+          </ol>
+        </div>
+      </PageHeader>
 
       <div className="wrap grid gap-16 py-16 md:grid-cols-[2fr_1fr] md:py-24">
         {sent ? (
           <p role="status" className="border-l-2 border-primary pl-6 text-lg leading-relaxed">
-            Thank you — your note is on its way. I answer in batches on Fridays, so give me a few
-            days.
+            Thank you — your note is on its way. I'll get back to you by email.
           </p>
         ) : (
           <form className="grid max-w-xl gap-6" onSubmit={onSubmit}>
@@ -106,10 +125,10 @@ function Contact() {
                 name="subject"
                 className="border-b border-foreground/30 bg-transparent py-2 outline-none focus:border-primary"
               >
-                <option>A commission</option>
-                <option>Editorial systems work</option>
-                <option>Speaking or teaching</option>
-                <option>Something I wrote</option>
+                <option>Technical writing</option>
+                <option>Explaining a project or stack</option>
+                <option>A project, case study, or something I wrote</option>
+                <option>Something else</option>
               </select>
             </div>
             <div className="grid gap-2">
@@ -156,14 +175,6 @@ function Contact() {
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="border-l border-rule pl-5">
-            <h2 className="eyebrow">On collaboration</h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              I take on two editorial systems projects a year and a handful of commissions. I work
-              best with teams who already care about the words and want help making that care
-              repeatable.
-            </p>
           </div>
         </aside>
       </div>
